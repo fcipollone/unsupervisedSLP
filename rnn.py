@@ -7,13 +7,13 @@ class predictor:
 	def __init__(self):
 		self.data = dataHolder()
 		self.timelength = 15
-		self.num_features = 20
-		self.lr = 1e-3
+		self.num_features = 21
+		self.lr = 1e-4
 		self.batch_size = 20
-		self.num_hidden = self.num_features
+		self.num_hidden = 100
 
 		self.X = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
-		self.Y = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
+		self.Y = tf.placeholder(tf.float32, [None, self.num_features])
 
 		self.loss = self.buildGraph()
 		self.addOptimizer()
@@ -32,14 +32,16 @@ class predictor:
 	def buildModel(self):
 		batch_size = tf.shape(self.X)[0]
 		self.myGRU = tf.contrib.rnn.GRUCell(self.num_hidden,input_size=(None,self.timelength,self.num_features))
-		outputs, _ = tf.nn.dynamic_rnn(self.myGRU, self.X, initial_state = self.myGRU.zero_state(batch_size,tf.float32))
-		return outputs
+		outputs, _ = tf.nn.dynamic_rnn(self.myGRU, self.X, initial_state = self.myGRU.zero_state(batch_size,tf.float32), scope='rnn1')
+		self.secondGRU = tf.contrib.rnn.GRUCell(self.num_features,input_size=(None,self.timelength,self.num_hidden))
+		outputs, state = tf.nn.dynamic_rnn(self.secondGRU, outputs, initial_state = self.secondGRU.zero_state(batch_size,tf.float32),scope='rnn2')
+		return state
 
 	def addLoss(self, y_out):
 		l2_cost = 0
 		for el in tf.trainable_variables():
 			if 'weights:0' in el.name.split('/'):
-				l2_cost += tf.nn.l2_loss(el)
+				l2_cost += tf.nn.l2_loss(el)*.01
 		self.lossWithoutReg = tf.reduce_mean(tf.losses.mean_squared_error(y_out,self.Y))
 		return tf.reduce_mean(l2_cost) + tf.reduce_mean(tf.losses.mean_squared_error(y_out,self.Y))
 

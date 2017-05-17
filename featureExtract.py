@@ -1,6 +1,8 @@
-import librosa
+#import librosa
 import numpy as np
 import random
+from pyAudioAnalysis import audioBasicIO
+from pyAudioAnalysis import audioFeatureExtraction
 
 class dataHolder:
 	def __init__(self):
@@ -26,7 +28,7 @@ class dataHolder:
 			endind = random.randint(length, len(item)-1)
 			startind = endind-length
 			returnBatch.append(item[startind:endind])
-			returnLabels.append(item[startind+1:endind+1])
+			returnLabels.append(item[endind])
 		return np.array(returnBatch), np.array(returnLabels)
 
 
@@ -35,11 +37,15 @@ class dataHolder:
 		for el in filenames:
 			s = dirname+'/'+el
 			print (s)
-			a, _ = librosa.core.load(s)
-			features = librosa.feature.mfcc(a)
-			features = np.transpose(features)
+			[Fs, x] = audioBasicIO.readAudioFile(s);
+			F = audioFeatureExtraction.stFeatureExtraction(x, Fs, 0.050*Fs, 0.025*Fs);
+			indices = [i for i in range(0,9)]
+			indices.extend([i for i in range(22,34)])
+			#a, _ = librosa.core.load(s)
+			#features = librosa.feature.mfcc(a)
+			#features = np.transpose(features)
 			# features is a (time, features) array
-			returnList.append(features)
+			returnList.append(F[indices,:].T)
 
 		return returnList
 
