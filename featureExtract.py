@@ -34,19 +34,25 @@ class dataHolder:
 
 	def getAllFeaures(self, dirname, filenames):
 		returnList = []
+		indices = [i for i in range(0,9)]
+		indices.extend([i for i in range(22,34)])
+		indices = [1]
+		tot = np.zeros(len(indices))
+		num = 0
 		for el in filenames:
 			s = dirname+'/'+el
 			print (s)
 			[Fs, x] = audioBasicIO.readAudioFile(s);
 			F = audioFeatureExtraction.stFeatureExtraction(x, Fs, 0.050*Fs, 0.025*Fs);
-			indices = [i for i in range(0,9)]
-			indices.extend([i for i in range(22,34)])
+
 			#a, _ = librosa.core.load(s)
 			#features = librosa.feature.mfcc(a)
 			#features = np.transpose(features)
 			# features is a (time, features) array
+			tot += np.mean(F[indices,:],axis=1)
+			num +=1 
 			returnList.append(F[indices,:].T)
-
+		print (tot/num)
 		return returnList
 
 
