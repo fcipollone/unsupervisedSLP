@@ -9,9 +9,18 @@ class dataHolder:
 		self.dirs = ['DC', 'JE', 'JK', 'KL']
 		filenames = self.getAllFilenames()
 		self.DC = self.getAllFeaures('data/DC',filenames)
+		self.DC, self.DCValid, self.DCtest = self.splitData(self.DC)
 		self.JE = self.getAllFeaures('data/JE',filenames)
+		self.JE, self.JEValid, self.JEtest = self.splitData(self.JE)
 		self.JK = self.getAllFeaures('data/JK',filenames)
+		self.JK, self.JKValid, self.JKtest = self.splitData(self.JK)
 		self.KL = self.getAllFeaures('data/KL',filenames)
+		self.KL, self.KLValid, self.KLtest = self.splitData(self.KL)
+
+	def splitData(self, data):
+		valid = int(.8*float(len(data)))
+		test = int(.9*float(len(data)))
+		return data[0:valid], data[valid:test], data[test:]
 
 	def getBatchOf(self, size, length, varname="DC"):
 		returnBatch = []
@@ -31,6 +40,23 @@ class dataHolder:
 			returnLabels.append(item[endind])
 		return np.array(returnBatch), np.array(returnLabels)
 
+	def getBatchValid(self, size, length, varname="DC"):
+		returnBatch = []
+		returnLabels = []
+		takenFrom = self.DCValid
+		if varname == 'JE':
+			takenFrom = self.JEValid
+		elif varname == 'JK':
+			takenFrom == self.JKValid
+		elif varname == 'KL':
+			takenFrom = self.KLValid
+		for i in range(size):
+			item = takenFrom[random.randint(0,len(takenFrom)-1)]
+			endind = random.randint(length, len(item)-1)
+			startind = endind-length
+			returnBatch.append(item[startind:endind])
+			returnLabels.append(item[endind])
+		return np.array(returnBatch), np.array(returnLabels)
 
 	def getAllFeaures(self, dirname, filenames):
 		returnList = []

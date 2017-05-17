@@ -54,14 +54,15 @@ class predictor:
 			session.run(tf.global_variables_initializer())
 			for i in range(10000):
 				batch_x, batch_y = self.data.getBatchOf(size=self.batch_size, length=self.timelength)
-				_, yo = session.run([self.optimizer,self.state], feed_dict=self.createFeedDict(batch_x, batch_y))
+				session.run([self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
 				if i % 300 == 0:
 					print ("Iteration: ", i)
+					batch_x, batch_y = self.data.getBatchValid(size=self.batch_size, length=self.timelength)
+					loss, lwr, yo = session.run([self.loss, self.lossWithoutReg, self.state], feed_dict=self.createFeedDict(batch_x, batch_y))
 					print (yo)
-					batch_x, batch_y = self.data.getBatchOf(size=self.batch_size, length=self.timelength)
-					loss, lwr = session.run([self.loss, self.lossWithoutReg], feed_dict=self.createFeedDict(batch_x, batch_y))
 					print ("Loss = ", loss)
 					print ("Loss without regularization = ", lwr)
+					print batch_x[0]
 
 p = predictor()
 p.train()
