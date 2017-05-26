@@ -9,8 +9,8 @@ class dataHolder:
 		self.dirs = ['DC', 'JE', 'JK', 'KL']
 		self.numbers = [15, 15, 15, 15, 30, 15, 15]
 		self.fileTypes = ['a', 'd', 'f', 'h', 'n', 'sa', 'su']
-		#self.numbers = [15]
-		#self.fileTypes = ['a']
+		self.numbers = [15]
+		self.fileTypes = ['a']
 		filenames = self.getAllFilenames()
 		self.DC, self.DCLabels = self.getAllFeatures('data/DC',filenames)
 		print len(self.DC)

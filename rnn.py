@@ -101,6 +101,10 @@ class predictor:
 					#print ("Loss without regularization = ", lwr)
 
 
+
+
+
+
 p = predictor()
 p.train()
 
