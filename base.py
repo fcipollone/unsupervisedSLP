@@ -10,6 +10,8 @@ class baseClassifier:
 		self.num_features = 1
 		self.lr_autoencoder = 1e-4
 		self.lr_classifier = 1e-4
+		self.iterations_autoencoder = 10000
+		self.iterations_classification = 10000
 		self.batch_size = 100
 		self.num_hidden = 100
 		self.num_classes = 7
@@ -17,6 +19,7 @@ class baseClassifier:
 		self.X = None
 		self.Y = None
 		self.YClass = None
+
 
 	def addPlaceholders(self):
 		if self.batchType == "Predict single next":
@@ -61,28 +64,51 @@ class baseClassifier:
 	def addOptimizer(self):
 		raise NotImplementedError()
 
+	def getBatch(self, batch_size, timelength):
+		if self.batchType == "Predict single next":
+			return self.data.getBatchOf(size=batch_size, length=timelength)
+		else:
+			raise "This batch type is not recognized."
+
+	def getBatchValid(self, batch_size, timelength):
+		if self.batchType == "Predict single next":
+			return self.data.getBatchValid(size=batch_size, length=timelength)
+		else:
+			raise "This batch type is not recognized."
+
+	def getBatchWithLabels(self, batch_size, timelength):
+		if self.batchType == "Predict single next":
+			return self.data.getBatchWithLabels(size=batch_size, length=timelength)
+		else:
+			raise "This batch type is not recognized."
+
+	def getBatchWithLabelsValid(self, batch_size, timelength):
+		if self.batchType == "Predict single next":
+			return self.data.getBatchWithLabels(size=batch_size, length=timelength)
+		else:
+			raise "This batch type is not recognized."
+
 	def train(self):
 		with tf.Session() as session:
 			train_writer = tf.summary.FileWriter('train', session.graph)
 			session.run(tf.global_variables_initializer())
-			for i in range(10000):
-				batch_x, batch_y = self.data.getBatchOf(size=self.batch_size, length=self.timelength)
+			for i in range(self.iterations_autoencoder):
+				batch_x, batch_y = self.getBatch(self.batch_size, self.timelength)
 				summary, _ = session.run([self.merged, self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
 				train_writer.add_summary(summary, i)
 				if i % 300 == 0:
 					print ("Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchValid(size=self.batch_size, length=self.timelength)
-					loss, lwr, yo = session.run([self.loss, self.lossWithoutReg, self.state], feed_dict=self.createFeedDict(batch_x, batch_y))
-					print ("Loss = ", loss)
-					print ("Loss without regularization = ", lwr)
-			for i in range(10000):
-				batch_x, batch_y = self.data.getBatchWithLabels(size=self.batch_size, length=self.timelength)
-				session.run([self.secondOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
+					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
+					print ("Loss = ", loss[0])
+			for i in range(self.iterations_classification):
+				batch_x, batch_y = self.getBatchWithLabels(self.batch_size, self.timelength)
+				session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
 				if i % 100 == 0:
 					print ("Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchWithLabelsValid(size=self.batch_size, length=self.timelength)
-					loss = session.run([self.secondLoss], feed_dict=self.createFeedDict2(batch_x, batch_y))
-					print ("Loss = ", loss)
+					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
+					loss = session.run([self.classificationLoss], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					print ("Loss = ", loss[0])
 					#print ("Loss without regularization = ", lwr)
 
 
