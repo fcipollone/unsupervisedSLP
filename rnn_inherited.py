@@ -37,11 +37,11 @@ class rnn_inherited(baseClassifier):
 	def addOptimizer(self):
 		optimizer = tf.train.AdamOptimizer(self.lr_autoencoder)
 		step1Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step1")
-		self.optimizer = optimizer.minimize(self.loss, var_list=step1Train)
+		optimizer = optimizer.minimize(self.loss, var_list=step1Train)
 		optimizer2 = tf.train.AdamOptimizer(self.lr_classifier)
 		step2Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step2")
-		self.secondOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
-		return self.optimizer, self.secondOptimizer
+		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
+		return optimizer, classificationOptimizer
 
 p = rnn_inherited()
 p.createModel()

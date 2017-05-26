@@ -70,7 +70,14 @@ class baseClassifier:
 		raise NotImplementedError()
 
 	def addOptimizer(self):
-		raise NotImplementedError()
+		optimizer = tf.train.AdamOptimizer(self.lr_autoencoder)
+		step1Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step1")
+		optimizer = optimizer.minimize(self.loss, var_list=step1Train)
+		optimizer2 = tf.train.AdamOptimizer(self.lr_classifier)
+		step2Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step2")
+		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
+		return optimizer, classificationOptimizer
+
 
 	def getBatch(self, batch_size, timelength):
 		if self.batchType == "Predict single next":
