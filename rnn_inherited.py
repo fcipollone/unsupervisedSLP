@@ -16,10 +16,11 @@ class rnn_inherited(baseClassifier):
 		outputs, self.state = tf.nn.dynamic_rnn(self.secondLSTM, outputs, initial_state = self.secondLSTM.zero_state(batch_size,tf.float32),scope='step1/rnn2')
 		self.state, _ = tf.split(self.state, [1,1], 0) # This is necessary when using the LSTM cell. splits tensor into sizes 1 and 1 on axis 0
 		self.state = tf.reshape(self.state, [-1,1])
+
+		#Self.state is my prediction for the next step, this next part is a fully connected layer from all hidden states
+		#To the classification for part two.
 		packedOutputs = tf.stack(outputs)
-		#print packedOutputs.shape
 		outputs = tf.reshape(packedOutputs, [-1, self.timelength*self.num_features])
-		#print outputs.shape
 		self.classification = tf.contrib.layers.fully_connected(outputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
 		return self.state
 
