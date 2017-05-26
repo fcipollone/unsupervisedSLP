@@ -23,7 +23,6 @@ class rnn_inherited(baseClassifier):
 		self.classification = tf.contrib.layers.fully_connected(outputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
 		return self.state
 
-
 	def addLoss(self, y_out):
 		l2_cost = 0
 		for el in tf.trainable_variables():
@@ -43,6 +42,7 @@ class rnn_inherited(baseClassifier):
 		step2Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step2")
 		self.secondOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return self.optimizer, self.secondOptimizer
+
 p = rnn_inherited()
 p.createModel()
 p.train()
