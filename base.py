@@ -49,6 +49,12 @@ class baseClassifier:
 		self.optimizer, self.classificationOptimizer = self.addOptimizer()
 		if self.optimizer == None or self.classificationOptimizer == None:
 			raise "You need to set and return both the optimizer and the classification optimizer in function addLoss"
+		
+		self.classificationAccuracy = None
+		self.classificationAccuracy = self.addAccuracy(y_out)
+		if self.classificationAccuracy == None:
+			raise "You need to set and return the classification accuracy in function addAccuracy"
+
 		self.merged = tf.summary.merge_all()
 
 	def createFeedDict(self, X, Y):
@@ -132,6 +138,9 @@ class baseClassifier:
 					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
 					loss = session.run([self.classificationLoss], feed_dict=self.createFeedDict2(batch_x, batch_y))
 					print ("Loss = ", loss[0])
+
+					accuracy = session.run([self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					print ("Accuracy = ", accuracy[0])
 
 
 
