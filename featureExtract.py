@@ -27,7 +27,10 @@ class dataHolder:
 		test = int(.9*float(len(data)))
 		return data[0:valid], data[valid:test], data[test:], dataLabels[0:valid], dataLabels[valid:test], dataLabels[test:]
 
-	def getBatchOf(self, size, length, varname="DC"):
+	def getBatchOf(self, size, length, varname=None):
+		people = ['JE', 'JK', 'KL', 'DC']
+		if varname == None:
+			varname = people[random.randint(0,3)]
 		returnBatch = []
 		returnLabels = []
 		takenFrom = self.DC
@@ -116,7 +119,10 @@ class dataHolder:
 		returnLabels = []
 		indices = [i for i in range(0,9)]
 		indices.extend([i for i in range(22,34)])
-		indices = [1]
+
+		# these indices are how to change features
+		indices = [0,1]
+		
 		tot = np.zeros(len(indices))
 		num = 0
 		for el in filenames:

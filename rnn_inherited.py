@@ -15,7 +15,7 @@ class rnn_inherited(baseClassifier):
 		#self.secondGRU = tf.contrib.rnn.GRUCell(self.num_features,input_size=(None,self.timelength,self.num_hidden))
 		outputs, self.state = tf.nn.dynamic_rnn(self.secondLSTM, outputs, initial_state = self.secondLSTM.zero_state(batch_size,tf.float32),scope='step1/rnn2')
 		self.state, _ = tf.split(self.state, [1,1], 0) # This is necessary when using the LSTM cell. splits tensor into sizes 1 and 1 on axis 0
-		self.state = tf.reshape(self.state, [-1,1])
+		self.state = tf.reshape(self.state, [-1, self.num_features])
 
 		#Self.state is my prediction for the next step, this next part is a fully connected layer from all hidden states
 		#To the classification for part two.

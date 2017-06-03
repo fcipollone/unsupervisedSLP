@@ -7,7 +7,7 @@ class baseClassifier:
 	def __init__(self):
 		self.data = dataHolder()
 		self.timelength = 15
-		self.num_features = 1
+		self.num_features = 2
 		self.lr_autoencoder = 1e-4
 		self.lr_classifier = 1e-4
 		self.iterations_autoencoder = 10000
