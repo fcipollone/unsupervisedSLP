@@ -2,6 +2,7 @@ import tensorflow as tf
 from featureExtract import dataHolder
 from tensorflow.contrib import layers
 from tensorflow.contrib import losses
+from time import gmtime, strftime
 
 class baseClassifier:
 	def __init__(self):
@@ -105,7 +106,9 @@ class baseClassifier:
 
 	def train(self):
 		with tf.Session() as session:
-			train_writer = tf.summary.FileWriter('train', session.graph)
+
+			logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
+			train_writer = tf.summary.FileWriter(logs_path + '/train', session.graph)
 			session.run(tf.global_variables_initializer())
 			for i in range(self.iterations_autoencoder):
 				#This is the part that trains the autoencoder

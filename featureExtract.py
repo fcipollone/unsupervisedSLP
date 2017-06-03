@@ -1,4 +1,6 @@
 #import librosa
+import matplotlib
+matplotlib.use('TkAgg')
 import numpy as np
 import random
 from pyAudioAnalysis import audioBasicIO
@@ -11,6 +13,7 @@ class dataHolder:
 		self.fileTypes = ['a', 'd', 'f', 'h', 'n', 'sa', 'su']
 		self.numbers = [15]
 		self.fileTypes = ['a']
+		self.indices = [6]
 		filenames = self.getAllFilenames()
 		self.DC, self.DCLabels = self.getAllFeatures('data/DC',filenames)
 		print len(self.DC)
@@ -114,9 +117,10 @@ class dataHolder:
 	def getAllFeatures(self, dirname, filenames):
 		returnList = []
 		returnLabels = []
-		indices = [i for i in range(0,9)]
-		indices.extend([i for i in range(22,34)])
-		indices = [1]
+		#indices = [i for i in range(0,9)]
+		#indices.extend([i for i in range(22,34)])
+		indices = self.indices
+
 		tot = np.zeros(len(indices))
 		num = 0
 		for el in filenames:
