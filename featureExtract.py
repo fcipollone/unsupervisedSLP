@@ -11,8 +11,8 @@ class dataHolder:
 		self.dirs = ['DC', 'JE', 'JK', 'KL']
 		self.numbers = [15, 15, 15, 15, 30, 15, 15]
 		self.fileTypes = ['a', 'd', 'f', 'h', 'n', 'sa', 'su']
-		self.numbers = [15]
-		self.fileTypes = ['a']
+		#self.numbers = [15]
+		#self.fileTypes = ['a']
 		self.indices = [6]
 		filenames = self.getAllFilenames()
 		self.DC, self.DCLabels = self.getAllFeatures('data/DC',filenames)
@@ -51,7 +51,10 @@ class dataHolder:
 			returnLabels.append(item[endind])
 		return np.array(returnBatch), np.array(returnLabels)
 
-	def getBatchValid(self, size, length, varname="DC"):
+	def getBatchValid(self, size, length, varname=None):
+		people = ['JE', 'JK', 'KL', 'DC']
+		if varname == None:
+			varname = people[random.randint(0,3)]
 		returnBatch = []
 		returnLabels = []
 		takenFrom = self.DCValid
@@ -69,7 +72,10 @@ class dataHolder:
 			returnLabels.append(item[endind])
 		return np.array(returnBatch), np.array(returnLabels)
 
-	def getBatchWithLabels(self, size, length, varname="DC"):
+	def getBatchWithLabels(self, size, length, varname=None):
+		people = ['JE', 'JK', 'KL', 'DC']
+		if varname == None:
+			varname = people[random.randint(0,3)]
 		returnBatch = []
 		returnLabels = []
 		labelsTaken = self.DCValidLabels
@@ -93,7 +99,10 @@ class dataHolder:
 			returnLabels.append(labelsTaken[index])
 		return np.array(returnBatch), np.array(returnLabels)
 
-	def getBatchWithLabelsValid(self, size, length, varname="DC"):
+	def getBatchWithLabelsValid(self, size, length, varname=None):
+		people = ['JE', 'JK', 'KL', 'DC']
+		if varname == None:
+			varname = people[random.randint(0,3)]
 		returnBatch = []
 		returnLabels = []
 		labelsTaken = self.DCLabels

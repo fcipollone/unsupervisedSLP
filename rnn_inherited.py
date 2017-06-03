@@ -34,7 +34,7 @@ class rnn_inherited(baseClassifier):
 		self.secondLoss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.YClass, logits=self.classification))
 		return tf.reduce_mean(l2_cost) + self.lossWithoutReg, self.secondLoss
 
-	def addAccuracy(self, y_out):
+	def addAccuracy(self):
 		self.secondAccuracy = tf.contrib.metrics.accuracy(labels=self.YClass, predictions=tf.to_int32(tf.argmax(self.classification,1)))
 		return self.secondAccuracy
 

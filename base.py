@@ -8,7 +8,7 @@ class baseClassifier:
 	def __init__(self):
 		self.data = dataHolder()
 		self.timelength = 15
-		self.num_features = 1
+		self.num_features = len(self.data.indices)
 		self.lr_autoencoder = 1e-4
 		self.lr_classifier = 1e-4
 		self.iterations_autoencoder = 10000
@@ -51,7 +51,7 @@ class baseClassifier:
 			raise "You need to set and return both the optimizer and the classification optimizer in function addLoss"
 		
 		self.classificationAccuracy = None
-		self.classificationAccuracy = self.addAccuracy(y_out)
+		self.classificationAccuracy = self.addAccuracy()
 		if self.classificationAccuracy == None:
 			raise "You need to set and return the classification accuracy in function addAccuracy"
 
