@@ -13,7 +13,11 @@ class dataHolder:
 		self.fileTypes = ['a', 'd', 'f', 'h', 'n', 'sa', 'su']
 		#self.numbers = [15]
 		#self.fileTypes = ['a']
+<<<<<<< Updated upstream
 		self.indices = [6]
+=======
+		self.indices = [5]
+>>>>>>> Stashed changes
 		filenames = self.getAllFilenames()
 		self.DC, self.DCLabels = self.getAllFeatures('data/DC',filenames)
 		print len(self.DC)
@@ -162,7 +166,13 @@ class dataHolder:
 			else:
 				returnLabels.append(6)
 		print (tot/num)
-		return returnList, returnLabels
+		returnListLength = len(returnList)
+
+		shuffledIndices = random.sample(range(returnListLength), returnListLength)
+		shuffledReturnList = [ returnList[i] for i in shuffledIndices]
+		shuffledReturnLabels = [ returnLabels[i] for i in shuffledIndices]
+
+		return shuffledReturnList, shuffledReturnLabels
 
 
 	def getAllFilenames(self):
