@@ -10,11 +10,11 @@ import os
 from os.path import isfile, join
 
 class dataHolder:
-	def __init__(self):
-
-		self.indices = [6]
+	def __init__(self, FLAGS):
+		self.FLAGS = FLAGS
+		self.indices = FLAGS.indices
 		filenames = self.getAllFilenames()
-		self.data, self.labels = self.getAllFeatures(filenames)
+		self.data, self.labels = self.getAllFeatures(filenames[0:10])
 		self.train, self.valid, self.test, self.train_labels, self.valid_labels, self.test_labels = self.splitData(self.data, self.labels)
 
 

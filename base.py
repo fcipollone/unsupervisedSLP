@@ -3,21 +3,23 @@ from featureExtract import dataHolder
 from tensorflow.contrib import layers
 from tensorflow.contrib import losses
 from time import gmtime, strftime
+import os
 
 class baseClassifier:
-	def __init__(self):
-		self.data = dataHolder()
-		self.timelength = 15
-		self.num_features = len(self.data.indices)
-		self.lr_autoencoder = 1e-4
-		self.lr_classifier = 1e-4
-		self.iterations_autoencoder = 1#10000
-		self.iterations_classification = 1#10000
-		self.batch_size = 100
+	def __init__(self, FLAGS):
+		self.FLAGS = FLAGS
+		self.data = dataHolder(FLAGS)
+		self.timelength = FLAGS.time_length
+		self.num_features = len(self.FLAGS.indices)
+		self.lr_autoencoder = FLAGS.autoencoder_learning_rate
+		self.lr_classifier = FLAGS.classifier_learning_rate
+		self.iterations_autoencoder = FLAGS.iterations_autoencoder
+		self.iterations_classification = FLAGS.iterations_classifier
+		self.batch_size = FLAGS.batch_size
 		self.num_hidden = 100
-		self.num_classes = 7
-		self.train_autoencoder = True
-		self.train_classifier = True
+		self.num_classes = FLAGS.num_classes
+		self.train_autoencoder = FLAGS.train_autoencoder
+		self.train_classifier = FLAGS.train_classifier
 		#Batch type is a feature because I want to allow for multiple ways to input data
 		#	1) Currently "Predict single next" is the only one -- you get 'timelength' previous steps
 		#	and need to predict the next step's features.
@@ -89,13 +91,18 @@ class baseClassifier:
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
 
-	def train(self, restore=None):
+	def train(self):
 		with tf.Session() as session:
 			self.saver = tf.train.Saver()
-			logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
+			#logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
+			logs_path = 'tensorboard/' + self.FLAGS.run_name
 			train_writer = tf.summary.FileWriter(logs_path + '/train', session.graph)
-			if restore == None:
+			if self.FLAGS.load_dir == None:
 				session.run(tf.global_variables_initializer())
+			else:
+				self.loadModel(session)
+
+			if self.train_autoencoder:
 				for i in range(self.iterations_autoencoder):
 					#This is the part that trains the autoencoder
 					batch_x, batch_y = self.data.getBatchOf(self.batch_size, self.timelength, self.batchType)
@@ -107,7 +114,9 @@ class baseClassifier:
 						batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength, self.batchType)
 						loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 						print ("Loss = ", loss[0])
+				self.saveModel(session, 'autoencoder/')
 
+			if self.train_classifier:
 				for i in range(self.iterations_classification):
 					#This is the part that trains the classifier
 					batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
@@ -120,18 +129,24 @@ class baseClassifier:
 						summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
 						print ("Loss = ", loss)
 						print ("Accuracy = ", accuracy)
-				
-				self.saveModel(session)
+				self.saveModel(session, 'autoencoder_and_classifier/')
 
-			else:
-				self.loadModel(session, restore)
 
-	def saveModel(self, session):
-		save_path = self.saver.save(session, "/tmp/model.ckpt")
-  		print("Model saved in file: %s" % save_path)
 
-  	def loadModel(self, session, checkpoint_path):
-  		self.saver.restore(session, checkpoint_path)
+	def saveModel(self, session, direc):
+		model_save_path = self.FLAGS.model_save_dir
+		directory = model_save_path + self.FLAGS.model_name
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+		directory += '/' + direc
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+		save_path = self.saver.save(session, directory + self.FLAGS.run_name)
+		print("Model saved in file: %s" % save_path)
+
+	def loadModel(self, session):
+		print ('loading from: %s' %self.FLAGS.load_dir)
+		self.saver.restore(session, self.FLAGS.load_dir)
 
 
 
