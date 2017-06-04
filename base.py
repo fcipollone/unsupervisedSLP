@@ -11,8 +11,8 @@ class baseClassifier:
 		self.num_features = len(self.data.indices)
 		self.lr_autoencoder = 1e-4
 		self.lr_classifier = 1e-4
-		self.iterations_autoencoder = 10000
-		self.iterations_classification = 10000
+		self.iterations_autoencoder = 1#10000
+		self.iterations_classification = 1#10000
 		self.batch_size = 100
 		self.num_hidden = 100
 		self.num_classes = 7
@@ -87,37 +87,50 @@ class baseClassifier:
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
 
-	def train(self):
+	def train(self, restore=None):
 		with tf.Session() as session:
-
+			self.saver = tf.train.Saver()
 			logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 			train_writer = tf.summary.FileWriter(logs_path + '/train', session.graph)
-			session.run(tf.global_variables_initializer())
-			for i in range(self.iterations_autoencoder):
-				#This is the part that trains the autoencoder
-				batch_x, batch_y = self.data.getBatchOf(self.batch_size, self.timelength, self.batchType)
-				summary, _ = session.run([self.merged, self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
-				train_writer.add_summary(summary, i)
-				if i % 300 == 0:
-					#Every once in a while print the loss
-					print ("Autoencoder Iteration: ", i)
-					batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
-					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
-					print ("Loss = ", loss[0])
 
-			for i in range(self.iterations_classification):
-				#This is the part that trains the classifier
-				batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
-				session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
-				#train_writer.add_summary(summary, i)
-				if i % 100 == 0:
-					#Every once in a while print the loss
-					print ("Classification Iteration: ", i)
-					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
-					summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
-					print ("Loss = ", loss)
-					print ("Accuracy = ", accuracy)
+			if restore == None:
+				session.run(tf.global_variables_initializer())
+				for i in range(self.iterations_autoencoder):
+					#This is the part that trains the autoencoder
+					batch_x, batch_y = self.data.getBatchOf(self.batch_size, self.timelength, self.batchType)
+					summary, _ = session.run([self.merged, self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
 					train_writer.add_summary(summary, i)
+					if i % 300 == 0:
+						#Every once in a while print the loss
+						print ("Autoencoder Iteration: ", i)
+						batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
+						loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
+						print ("Loss = ", loss[0])
+
+				for i in range(self.iterations_classification):
+					#This is the part that trains the classifier
+					batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
+					session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					#train_writer.add_summary(summary, i)
+					if i % 100 == 0:
+						#Every once in a while print the loss
+						print ("Classification Iteration: ", i)
+						batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
+						summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
+						print ("Loss = ", loss)
+						print ("Accuracy = ", accuracy)
+				
+				self.saveModel(session)
+
+			else:
+				self.loadModel(session, restore)
+
+	def saveModel(self, session):
+		save_path = self.saver.save(session, "/tmp/model.ckpt")
+  		print("Model saved in file: %s" % save_path)
+
+  	def loadModel(self, session, checkpoint_path):
+  		self.saver.restore(session, checkpoint_path)
 
 
 

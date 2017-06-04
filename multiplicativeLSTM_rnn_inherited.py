@@ -54,5 +54,6 @@ class multiplicative_LSTM_rnn_inherited(baseClassifier):
 
 p = multiplicative_LSTM_rnn_inherited()
 p.createModel()
+#p.train("/tmp/model.ckpt")
 p.train()
 
