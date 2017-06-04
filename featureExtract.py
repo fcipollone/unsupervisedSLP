@@ -12,11 +12,14 @@ from os.path import isfile, join
 class dataHolder:
 	def __init__(self):
 
-		self.indices = [6]
+		self.featuresFileName = "features"
+		self.labelsFileName = "labels"
+
+		self.indices = [1]
 		filenames = self.getAllFilenames()
+		# self.testFileReading()
 		self.data, self.labels = self.getAllFeatures(filenames)
 		self.train, self.valid, self.test, self.train_labels, self.valid_labels, self.test_labels = self.splitData(self.data, self.labels)
-
 
 	def splitData(self, data, dataLabels):
 		valid = int(.8*float(len(data)))
@@ -90,10 +93,27 @@ class dataHolder:
 		return np.array(returnBatch), np.array(returnLabels)
 
 	def getAllFeatures(self, filenames):
+		allIndices = range(34)
+
+		try:
+   			features = np.load(self.featuresFileName + ".npy")
+   			labels = np.load(self.labelsFileName + ".npy")
+   			sliced_features = [x[:,self.indices] for x in features]
+   			return sliced_features, labels
+
+		except IOError:
+			print "Generating features"
+			features, labels = self.parseAllFeatures(allIndices, filenames)
+
+			np.save(self.featuresFileName, features)
+			np.save(self.labelsFileName, labels)
+
+			sliced_features = [x[:,self.indices] for x in features]
+			return sliced_features, labels
+
+	def parseAllFeatures(self, indices, filenames):
 		returnList = []
 		returnLabels = []
-
-		indices = self.indices
 
 		tot = np.zeros(len(indices))
 		num = 0
@@ -129,11 +149,15 @@ class dataHolder:
 				returnLabels.append(6)
 		returnListLength = len(returnList)
 
+		random.seed(13921)
+
 		shuffledIndices = random.sample(range(returnListLength), returnListLength)
 		shuffledReturnList = [ returnList[i] for i in shuffledIndices]
 		shuffledReturnLabels = [ returnLabels[i] for i in shuffledIndices]
 
 		return shuffledReturnList, shuffledReturnLabels
+
+		#return returnList, returnLabels
 
 
 	def getAllFilenames(self):
