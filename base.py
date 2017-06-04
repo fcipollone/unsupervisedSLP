@@ -28,6 +28,7 @@ class baseClassifier:
 		self.YClass = None
 
 
+
 	def addPlaceholders(self):
 		#Pretty standard. 
 		if self.batchType == "Predict single next":
@@ -85,31 +86,6 @@ class baseClassifier:
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
 
-
-	def getBatch(self, batch_size, timelength):
-		if self.batchType == "Predict single next":
-			return self.data.getBatchOf(size=batch_size, length=timelength)
-		else:
-			raise "This batch type is not recognized."
-
-	def getBatchValid(self, batch_size, timelength):
-		if self.batchType == "Predict single next":
-			return self.data.getBatchValid(size=batch_size, length=timelength)
-		else:
-			raise "This batch type is not recognized."
-
-	def getBatchWithLabels(self, batch_size, timelength):
-		if self.batchType == "Predict single next":
-			return self.data.getBatchWithLabels(size=batch_size, length=timelength)
-		else:
-			raise "This batch type is not recognized."
-
-	def getBatchWithLabelsValid(self, batch_size, timelength):
-		if self.batchType == "Predict single next":
-			return self.data.getBatchWithLabels(size=batch_size, length=timelength)
-		else:
-			raise "This batch type is not recognized."
-
 	def train(self):
 		with tf.Session() as session:
 
@@ -118,24 +94,24 @@ class baseClassifier:
 			session.run(tf.global_variables_initializer())
 			for i in range(self.iterations_autoencoder):
 				#This is the part that trains the autoencoder
-				batch_x, batch_y = self.getBatch(self.batch_size, self.timelength)
+				batch_x, batch_y = self.data.getBatchOf(self.batch_size, self.timelength, self.batchType)
 				summary, _ = session.run([self.merged, self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
 				train_writer.add_summary(summary, i)
 				if i % 300 == 0:
 					#Every once in a while print the loss
 					print ("Iteration: ", i)
-					batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
+					batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength, self.batchType)
 					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 					print ("Loss = ", loss[0])
 
 			for i in range(self.iterations_classification):
 				#This is the part that trains the classifier
-				batch_x, batch_y = self.getBatchWithLabels(self.batch_size, self.timelength)
+				batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
 				session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
 				if i % 100 == 0:
 					#Every once in a while print the loss
 					print ("Iteration: ", i)
-					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
+					batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
 					loss = session.run([self.classificationLoss], feed_dict=self.createFeedDict2(batch_x, batch_y))
 					print ("Loss = ", loss[0])
 
