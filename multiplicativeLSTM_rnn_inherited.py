@@ -10,13 +10,13 @@ class multiplicative_LSTM_rnn_inherited(baseClassifier):
 		self.myLSTM = MultiplicativeLSTMCell(self.num_hidden)
 		#self.myGRU = tf.contrib.rnn.GRUCell(self.num_hidden,input_size=(None,self.timelength,self.num_features))
 		outputs, _ = tf.nn.dynamic_rnn(self.myLSTM, self.X, initial_state = self.myLSTM.zero_state(batch_size,tf.float32), scope='step1/rnn1')
-		self.secondLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_features)
+		self.secondLSTM = MultiplicativeLSTMCell(self.num_features)
 		print self.myLSTM.state_size
 		print self.secondLSTM.state_size
 		#self.secondGRU = tf.contrib.rnn.GRUCell(self.num_features,input_size=(None,self.timelength,self.num_hidden))
 		outputs, self.state = tf.nn.dynamic_rnn(self.secondLSTM, outputs, initial_state = self.secondLSTM.zero_state(batch_size,tf.float32),scope='step1/rnn2')
 		self.state, _ = tf.split(self.state, [1,1], 0) # This is necessary when using the LSTM cell. splits tensor into sizes 1 and 1 on axis 0
-		self.state = tf.reshape(self.state, [-1,1])
+		self.state = tf.reshape(self.state, [-1, self.num_features])
 
 		#Self.state is my prediction for the next step, this next part is a fully connected layer from all hidden states
 		#To the classification for part two.
@@ -31,13 +31,17 @@ class multiplicative_LSTM_rnn_inherited(baseClassifier):
 			if 'weights:0' in el.name.split('/'):
 				l2_cost += tf.nn.l2_loss(el)*.01
 		self.lossWithoutReg = tf.reduce_mean(tf.losses.mean_squared_error(y_out,self.Y))*10000
-		tf.summary.scalar('Loss without regularization', self.lossWithoutReg)
-		self.secondLoss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.YClass, logits=self.classification))
-		return tf.reduce_mean(l2_cost) + self.lossWithoutReg, self.secondLoss
+		loss_summary = tf.summary.scalar('Autoencoder Loss without regularization', self.lossWithoutReg)
 
-	def addAccuracy(self, y_out):
+		self.secondLoss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.YClass, logits=self.classification))
+		second_loss_summary = tf.summary.scalar('Classification Loss', self.secondLoss)
+		return tf.reduce_mean(l2_cost) + self.lossWithoutReg, loss_summary, self.secondLoss, second_loss_summary
+
+	def addAccuracy(self):
 		self.secondAccuracy = tf.contrib.metrics.accuracy(labels=self.YClass, predictions=tf.to_int32(tf.argmax(self.classification,1)))
-		return self.secondAccuracy
+		accuracy_summary = tf.summary.scalar('Classification accuracy', self.secondAccuracy)
+
+		return self.secondAccuracy, accuracy_summary
 
 	def addOptimizer(self):
 		optimizer = tf.train.AdamOptimizer(self.lr_autoencoder)

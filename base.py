@@ -44,7 +44,7 @@ class baseClassifier:
 		self.loss = None
 		self.classificationLoss = None
 		y_out = self.buildModel()
-		self.loss, self.classificationLoss = self.addLoss(y_out)
+		self.loss, self.lossSummary, self.classificationLoss, self.classificationLossSummary = self.addLoss(y_out)
 		if self.loss == None or self.classificationLoss == None:
 			raise "You need to set and return both the loss and the classification loss in function addLoss"
 		self.optimizer, self.classificationOptimizer = self.addOptimizer()
@@ -52,11 +52,12 @@ class baseClassifier:
 			raise "You need to set and return both the optimizer and the classification optimizer in function addLoss"
 		
 		self.classificationAccuracy = None
-		self.classificationAccuracy = self.addAccuracy()
+		self.classificationAccuracy, self.classificationAccuracySummary = self.addAccuracy()
 		if self.classificationAccuracy == None:
 			raise "You need to set and return the classification accuracy in function addAccuracy"
 
-		self.merged = tf.summary.merge_all()
+		self.merged = tf.summary.merge([self.lossSummary])
+		self.classificationMerged = tf.summary.merge([self.classificationAccuracySummary, self.classificationLossSummary])
 
 	def createFeedDict(self, X, Y):
 		feedDict = {}
@@ -99,8 +100,8 @@ class baseClassifier:
 				train_writer.add_summary(summary, i)
 				if i % 300 == 0:
 					#Every once in a while print the loss
-					print ("Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength, self.batchType)
+					print ("Autoencoder Iteration: ", i)
+					batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
 					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 					print ("Loss = ", loss[0])
 
@@ -108,15 +109,16 @@ class baseClassifier:
 				#This is the part that trains the classifier
 				batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
 				session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
+				#train_writer.add_summary(summary, i)
 				if i % 100 == 0:
 					#Every once in a while print the loss
-					print ("Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
-					loss = session.run([self.classificationLoss], feed_dict=self.createFeedDict2(batch_x, batch_y))
-					print ("Loss = ", loss[0])
+					print ("Classification Iteration: ", i)
+					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
+					summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					print ("Loss = ", loss)
+					print ("Accuracy = ", accuracy)
+					train_writer.add_summary(summary, i)
 
-					accuracy = session.run([self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
-					print ("Accuracy = ", accuracy[0])
 
 
 
