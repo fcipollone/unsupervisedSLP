@@ -13,11 +13,7 @@ class dataHolder:
 		self.fileTypes = ['a', 'd', 'f', 'h', 'n', 'sa', 'su']
 		#self.numbers = [15]
 		#self.fileTypes = ['a']
-<<<<<<< Updated upstream
-		self.indices = [6]
-=======
-		self.indices = [5]
->>>>>>> Stashed changes
+		self.indices = [1,2]
 		filenames = self.getAllFilenames()
 		self.DC, self.DCLabels = self.getAllFeatures('data/DC',filenames)
 		print len(self.DC)

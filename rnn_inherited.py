@@ -30,13 +30,17 @@ class rnn_inherited(baseClassifier):
 			if 'weights:0' in el.name.split('/'):
 				l2_cost += tf.nn.l2_loss(el)*.01
 		self.lossWithoutReg = tf.reduce_mean(tf.losses.mean_squared_error(y_out,self.Y))*10000
-		tf.summary.scalar('Loss without regularization', self.lossWithoutReg)
+		loss_summary = tf.summary.scalar('Autoencoder Loss without regularization', self.lossWithoutReg)
+
 		self.secondLoss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.YClass, logits=self.classification))
-		return tf.reduce_mean(l2_cost) + self.lossWithoutReg, self.secondLoss
+		second_loss_summary = tf.summary.scalar('Classification Loss', self.secondLoss)
+		return tf.reduce_mean(l2_cost) + self.lossWithoutReg, loss_summary, self.secondLoss, second_loss_summary
 
 	def addAccuracy(self):
 		self.secondAccuracy = tf.contrib.metrics.accuracy(labels=self.YClass, predictions=tf.to_int32(tf.argmax(self.classification,1)))
-		return self.secondAccuracy
+		accuracy_summary = tf.summary.scalar('Classification accuracy', self.secondAccuracy)
+
+		return self.secondAccuracy, accuracy_summary
 
 	def addOptimizer(self):
 		optimizer = tf.train.AdamOptimizer(self.lr_autoencoder)
