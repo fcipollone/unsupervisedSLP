@@ -16,6 +16,8 @@ class baseClassifier:
 		self.batch_size = 100
 		self.num_hidden = 100
 		self.num_classes = 7
+		self.train_autoencoder = True
+		self.train_classifier = True
 		#Batch type is a feature because I want to allow for multiple ways to input data
 		#	1) Currently "Predict single next" is the only one -- you get 'timelength' previous steps
 		#	and need to predict the next step's features.
@@ -92,7 +94,6 @@ class baseClassifier:
 			self.saver = tf.train.Saver()
 			logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 			train_writer = tf.summary.FileWriter(logs_path + '/train', session.graph)
-
 			if restore == None:
 				session.run(tf.global_variables_initializer())
 				for i in range(self.iterations_autoencoder):
