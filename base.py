@@ -16,6 +16,8 @@ class baseClassifier:
 		self.batch_size = 100
 		self.num_hidden = 100
 		self.num_classes = 7
+		self.train_autoencoder = True
+		self.train_classifier = True
 		#Batch type is a feature because I want to allow for multiple ways to input data
 		#	1) Currently "Predict single next" is the only one -- you get 'timelength' previous steps
 		#	and need to predict the next step's features.
@@ -92,32 +94,6 @@ class baseClassifier:
 			self.saver = tf.train.Saver()
 			logs_path = 'tensorboard/' + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 			train_writer = tf.summary.FileWriter(logs_path + '/train', session.graph)
-			session.run(tf.global_variables_initializer())
-			for i in range(self.iterations_autoencoder):
-				#This is the part that trains the autoencoder
-				batch_x, batch_y = self.data.getBatchOf(self.batch_size, self.timelength, self.batchType)
-				summary, _ = session.run([self.merged, self.optimizer], feed_dict=self.createFeedDict(batch_x, batch_y))
-				train_writer.add_summary(summary, i)
-				if i % 300 == 0:
-					#Every once in a while print the loss
-					print ("Autoencoder Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength)
-					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
-					print ("Loss = ", loss[0])
-
-			for i in range(self.iterations_classification):
-				#This is the part that trains the classifier
-				batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
-				session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
-				#train_writer.add_summary(summary, i)
-				if i % 100 == 0:
-					#Every once in a while print the loss
-					print ("Classification Iteration: ", i)
-					batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
-					summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
-					print ("Loss = ", loss)
-					print ("Accuracy = ", accuracy)
-
 			if restore == None:
 				session.run(tf.global_variables_initializer())
 				for i in range(self.iterations_autoencoder):
