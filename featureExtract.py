@@ -10,7 +10,7 @@ import os
 from os.path import isfile, join
 
 class dataHolder:
-	def __init__(self,data):
+	def __init__(self):
 
 		self.indices = [6]
 		filenames = self.getAllFilenames()

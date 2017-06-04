@@ -101,7 +101,7 @@ class baseClassifier:
 				if i % 300 == 0:
 					#Every once in a while print the loss
 					print ("Autoencoder Iteration: ", i)
-					batch_x, batch_y = self.getBatchValid(self.batch_size, self.timelength)
+					batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength)
 					loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 					print ("Loss = ", loss[0])
 
@@ -113,7 +113,7 @@ class baseClassifier:
 				if i % 100 == 0:
 					#Every once in a while print the loss
 					print ("Classification Iteration: ", i)
-					batch_x, batch_y = self.getBatchWithLabelsValid(self.batch_size, self.timelength)
+					batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
 					summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
 					print ("Loss = ", loss)
 					print ("Accuracy = ", accuracy)
