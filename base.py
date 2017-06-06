@@ -31,17 +31,23 @@ class baseClassifier:
 		#	In other words you'd feed 15 timesteps in for X, and 15 in for Y, but the 15 for Y would be
 		#	offset by one.
 		self.batchType = "Predict single next"
+		self.setBatchType()
 		self.X = None
 		self.Y = None
 		self.YClass = None
 
-
+	def setBatchType(self):
+		self.batchType = "Predict single next"
 
 	def addPlaceholders(self):
 		#Pretty standard. 
 		if self.batchType == "Predict single next":
 			self.X = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
 			self.Y = tf.placeholder(tf.float32, [None, self.num_features])
+			self.YClass = tf.placeholder(tf.int32, [None])
+		elif self.batchType == "Predict <timestep> next" or self.batchType == "vanilla autoencoder":
+			self.X = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
+			self.Y = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
 			self.YClass = tf.placeholder(tf.int32, [None])
 		else:
 			raise NotImplementedError()
@@ -118,7 +124,8 @@ class baseClassifier:
 						batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength, self.batchType)
 						loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 						print ("Loss = ", loss[0])
-				self.saveModel(session, 'autoencoder/')
+				if self.FLAGS.model_save_dir != None:
+					self.saveModel(session, 'autoencoder/')
 
 			if self.train_classifier:
 				for i in range(self.iterations_classification):
@@ -133,7 +140,8 @@ class baseClassifier:
 						summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
 						print ("Loss = ", loss)
 						print ("Accuracy = ", accuracy)
-				self.saveModel(session, 'autoencoder_and_classifier/')
+				if self.FLAGS.model_save_dir != None:
+					self.saveModel(session, 'autoencoder_and_classifier/')
 
 			if self.compute_validation_accuracy:
 				validationBatches = self.data.getAllValidationBatches(self.batch_size, self.timelength)
