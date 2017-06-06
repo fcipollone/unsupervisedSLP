@@ -1,7 +1,13 @@
 import argparse
 from rnn_inherited import rnn_inherited
+<<<<<<< HEAD
 from rnn_bigger_inherited import rnn_bigger_inherited
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 52d64816a3ad45e5b71b1e692eb62964d787d502
 from convolutional_inherited import convolutional_inherited
+>>>>>>> origin/master
 from multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
 import datetime
 from time import gmtime, strftime
@@ -19,11 +25,16 @@ parser.add_argument('-clss', '--num_classes',               type=int,   default=
 parser.add_argument('-atr', '--train_autoencoder',          type=bool,  default=True,             help='Whether to train the autoencoder or not')
 parser.add_argument('-ctr', '--train_classifier',           type=bool,  default=True,             help='Whether to train the classifier or not')
 parser.add_argument('-mdl', '--model_name',                 type=str,   default="rnn_inherited",  help='Whether to train the classifier or not')
+parser.add_argument('-vacc', '--validation_accuracy', 		type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire validation set')
+parser.add_argument('-tacc', '--test_accuracy', 			type=bool, 	default=False,				help='Whether to evaluate the accuracy of entire test set')
+
 
 if __name__ == '__main__':
 	FLAGS = parser.parse_args()
+
 	FLAGS.model_save_dir = '/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
 	FLAGS.load_dir = None #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/convolutional_inherited/autoencoder_and_classifier/convolutional_inherited0_2017_06_06_01_15_20'
+
 	FLAGS.indices = [0]
 	FLAGS.num_features = len(FLAGS.indices)
 
@@ -43,4 +54,5 @@ if __name__ == '__main__':
 
 	model.createModel()
 	model.train()
+
 

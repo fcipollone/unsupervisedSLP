@@ -92,7 +92,123 @@ class dataHolder:
 			startind = endind-length
 			returnBatch.append(item[startind:endind])
 			returnLabels.append(labelsTaken[index])
+		print np.shape(np.array(returnBatch)), np.shape(np.array(returnLabels))
 		return np.array(returnBatch), np.array(returnLabels)
+
+	def getAllValidationBatchesRandom(self, size, length):
+		print "get all validation batches random"
+		batches = []
+		#random.seed(48392)
+		batch_index = 0
+		print "len(self.valid)", len(self.valid)
+		print "size", size
+		print "length", length
+		while batch_index <= len(self.valid) - size:
+			print batch_index
+			batch = []
+			labels = []
+			for i in range(size):
+				index = batch_index + i 
+				item = self.valid[index]
+				endind = random.randint(length, len(item)-1)
+				startind = endind-length
+				batch.append(item[startind:endind])
+				labels.append(self.valid_labels[index])
+				
+			pairForBatch = [np.array(batch), np.array(labels)]
+			batches.append(pairForBatch)
+			batch_index += size 
+		# print "shape", np.shape(batches)
+		return batches
+
+	def getAllValidationBatches(self, size, length):
+		print "get all validation batches"
+		batches = []
+		batch_index = 0
+		print "len(self.valid)", len(self.valid)
+		print "size", size
+		print "length", length
+
+		# we want some number of batches
+		# each batch is of length size 
+		# each batch has a series of audio which are "length" timesteps
+
+		# we enumerate through the files to create batches 
+		batch = []
+		labels = []
+		for index, item in enumerate(self.valid):
+			for startInd in [length*x for x in range(len(item)/length)]:
+				if len(batch) == size:
+					pairForBatch = [np.array(batch), np.array(labels)]
+					batches.append(pairForBatch)
+					batch = []
+					labels = []
+				endInd = startInd + length
+				values = item[startInd:endInd]
+				batch.append(values)
+				labels.append(self.valid_labels[index])
+		return batches
+
+	def getAllValidationBatchesFromMiddle(self, size, length):
+		print "get all validation batches"
+		batches = []
+		#random.seed(48392)
+		batch_index = 0
+		print "len(self.valid)", len(self.valid)
+		print "size", size
+		print "length", length
+
+		# we want some number of batches
+		# each batch is of length size 
+		# each batch has a series of audio which are "length" timesteps
+
+		# we enumerate through the files to create batches 
+		batch = []
+		labels = []
+		for index, item in enumerate(self.valid):
+
+			startIndices = [length*x for x in range(len(item)/length)]
+			startIndicesMiddle = startIndices[len(startIndices)/3:len(startIndices) *2/3]
+
+			for startInd in startIndicesMiddle:
+				if len(batch) == size:
+					pairForBatch = [np.array(batch), np.array(labels)]
+					batches.append(pairForBatch)
+					batch = []
+					labels = []
+				endInd = startInd + length
+				values = item[startInd:endInd]
+				batch.append(values)
+				labels.append(self.valid_labels[index])
+		return batches
+
+	def getAllTestBatches(self, size, length):
+		print "get all validation batches"
+		batches = []
+		batch_index = 0
+		print "len(self.valid)", len(self.test)
+		print "size", size
+		print "length", length
+
+		# we want some number of batches
+		# each batch is of length size 
+		# each batch has a series of audio which are "length" timesteps
+
+		# we enumerate through the files to create batches 
+		batch = []
+		labels = []
+		for index, item in enumerate(self.test):
+			for startInd in [length*x for x in range(len(item)/length)]:
+				if len(batch) == size:
+					pairForBatch = [np.array(batch), np.array(labels)]
+					batches.append(pairForBatch)
+					batch = []
+					labels = []
+				endInd = startInd + length
+				values = item[startInd:endInd]
+				batch.append(values)
+				labels.append(self.test_labels[index])
+		return batches
 
 	def getAllFeatures(self, filenames):
 		allIndices = range(34)
