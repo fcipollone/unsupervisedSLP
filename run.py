@@ -1,14 +1,8 @@
 import argparse
-from rnn_inherited import rnn_inherited
-<<<<<<< HEAD
-from rnn_bigger_inherited import rnn_bigger_inherited
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 52d64816a3ad45e5b71b1e692eb62964d787d502
-from convolutional_inherited import convolutional_inherited
->>>>>>> origin/master
-from multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
+from models.rnn_inherited import rnn_inherited
+from models.rnn_bigger_inherited import rnn_bigger_inherited
+from models.convolutional_inherited import convolutional_inherited
+from models.multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
 import datetime
 from time import gmtime, strftime
 
