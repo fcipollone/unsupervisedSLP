@@ -1,6 +1,13 @@
 import argparse
-from models import *
 from models.autoencoder import autoencoder
+from models.convolutional_inherited import convolutional_inherited
+from models.convolutional_multiplicative_inherited import convolutional_multiplicative_inherited
+from models.convolutional_multiplicative_bigger_inherited import convolutional_multiplicative_bigger_inherited
+from models.multiplicative_LSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
+from models.multiplicative_LSTM_rnn_bigger_inherited import multiplicative_LSTM_rnn_bigger_inherited
+from models.multiplicative_LSTM_rnn_state_classifier_inherited import multiplicative_LSTM_rnn_state_classifier_inherited
+from models.rnn_inherited import rnn_inherited
+from models.rnn_bigger_inherited import rnn_bigger_inherited
 import datetime
 from time import gmtime, strftime
 
