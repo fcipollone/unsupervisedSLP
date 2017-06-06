@@ -41,7 +41,7 @@ class dataHolder:
 				returnLabels.append(item[startind:endind])
 			elif out_type.lower() == "predict single next":
 				returnLabels.append(item[endind])
-			elif out_type.lower() == "predict <timesteps> next":
+			elif out_type.lower() == "predict <timestep> next":
 				returnLabels.append(item[startind+1:endind+1])
 			else:
 				raise NotImplementedError
@@ -60,7 +60,7 @@ class dataHolder:
 				returnLabels.append(item[startind:endind])
 			elif out_type.lower() == "predict single next":
 				returnLabels.append(item[endind])
-			elif out_type.lower() == "predict <timesteps> next":
+			elif out_type.lower() == "predict <timestep> next":
 				returnLabels.append(item[startind+1:endind+1])
 			else:
 				raise NotImplementedError
