@@ -27,17 +27,23 @@ class baseClassifier:
 		#	In other words you'd feed 15 timesteps in for X, and 15 in for Y, but the 15 for Y would be
 		#	offset by one.
 		self.batchType = "Predict single next"
+		self.setBatchType()
 		self.X = None
 		self.Y = None
 		self.YClass = None
 
-
+	def setBatchType(self):
+		self.batchType = "Predict single next"
 
 	def addPlaceholders(self):
 		#Pretty standard. 
 		if self.batchType == "Predict single next":
 			self.X = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
 			self.Y = tf.placeholder(tf.float32, [None, self.num_features])
+			self.YClass = tf.placeholder(tf.int32, [None])
+		elif self.batchType == "Predict <timestep> next" or self.batchType == "vanilla autoencoder":
+			self.X = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
+			self.Y = tf.placeholder(tf.float32, [None, self.timelength, self.num_features])
 			self.YClass = tf.placeholder(tf.int32, [None])
 		else:
 			raise NotImplementedError()

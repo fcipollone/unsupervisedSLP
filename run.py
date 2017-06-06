@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	# feature-numbers, day, 
 	model_name = FLAGS.model_name
 	datestr = datetime.datetime.now().__str__()
-	FLAGS.run_name = datestr + "-" + '-'.join([str(i) for i in FLAGS.indices]) + "-" + model_name
+	FLAGS.run_name = model_name + "_".join([str(x) for x in self.data.indices]) + '_' + strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 	model = None
 	if model_name == "rnn_inherited":
 		model = rnn_inherited(FLAGS)
@@ -35,6 +35,8 @@ if __name__ == '__main__':
 		model = multiplicative_LSTM_rnn_inherited(FLAGS)
 	elif model_name == 'convolutional_inherited':
 		model = convolutional_inherited(FLAGS)
+	elif model_name == 'rnn_bigger_inherited':
+		model_
 
 	model.createModel()
 	model.train()
