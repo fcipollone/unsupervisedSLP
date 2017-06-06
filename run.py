@@ -1,5 +1,6 @@
 import argparse
-from models.rnn_inherited import *
+from models import *
+from models.autoencoder import autoencoder
 import datetime
 from time import gmtime, strftime
 
@@ -9,8 +10,8 @@ parser = argparse.ArgumentParser(description="Run commands")
 parser.add_argument('-time', '--time_length',               type=int,   default=15,               help="Number of timesteps that we train on")
 parser.add_argument('-alnr', '--autoencoder_learning_rate', type=float, default=1e-4,             help="Autoencoder learning rate")
 parser.add_argument('-clnr', '--classifier_learning_rate',  type=float, default=1e-4,             help="Autoencoder learning rate")
-parser.add_argument('-ait', '--iterations_autoencoder',     type=int,   default=1000,            help='number of iterations to run the autoencoder')
-parser.add_argument('-cit', '--iterations_classifier',      type=int,   default=1000,            help='number of iterations to run the classifier')
+parser.add_argument('-ait', '--iterations_autoencoder',     type=int,   default=10000,            help='number of iterations to run the autoencoder')
+parser.add_argument('-cit', '--iterations_classifier',      type=int,   default=10000,            help='number of iterations to run the classifier')
 parser.add_argument('-btch', '--batch_size',                type=int,   default=32,               help='size of batch')
 parser.add_argument('-clss', '--num_classes',               type=int,   default=7,                help='number of classes')
 parser.add_argument('-atr', '--train_autoencoder',          type=bool,  default=True,             help='Whether to train the autoencoder or not')
@@ -44,8 +45,6 @@ if __name__ == '__main__':
 		model = multiplicative_LSTM_rnn_inherited(FLAGS)
 	elif model_name == "multiplicative_LSTM_rnn_bigger_inherited":
 		model = multiplicative_LSTM_rnn_bigger_inherited(FLAGS)
-	elif model_name == "multiplicative_LSTM_rnn_autoencoder_inherited":
-		model = multiplicative_LSTM_rnn_autoencoder_inherited(FLAGS)
 	elif model_name == "multiplicative_LSTM_rnn_state_classifier_inherited":
 		model = multiplicative_LSTM_rnn_state_classifier_inherited(FLAGS)
 	elif model_name == 'convolutional_inherited':
@@ -54,9 +53,8 @@ if __name__ == '__main__':
 		model = convolutional_multiplicative_inherited(FLAGS)
 	elif model_name == 'convolutional_multiplicative_bigger_inherited':
 		model = convolutional_multiplicative_bigger_inherited(FLAGS)
-	elif model_name == 'convolutional_multiplicative_autoencoder_inherited':
-		model = convolutional_multiplicative_autoencoder_inherited(FLAGS)
-
+	elif model_name == 'autoencoder':
+		model = autoencoder(FLAGS)
 	model.createModel()
 	model.train()
 
