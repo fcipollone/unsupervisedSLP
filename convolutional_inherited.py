@@ -2,15 +2,17 @@ from base import baseClassifier
 import tensorflow as tf
 from tensorflow.contrib import layers
 from tensorflow.contrib import losses
-from MultiplicativeLSTMCell import MultiplicativeLSTMCell
 
-class multiplicative_LSTM_rnn_inherited(baseClassifier):
+class convolutional_inherited(baseClassifier):
 	def buildModel(self):
 		batch_size = tf.shape(self.X)[0]
-		self.myLSTM = MultiplicativeLSTMCell(self.num_hidden)
+		reshaped = tf.reshape(self.X, [-1, self.FLAGS.time_length, self.FLAGS.num_features, 1])
+		convolved = tf.contrib.layers.conv2d(reshaped, num_outputs=1, kernel_size=[4,1], stride=[1,1], padding="SAME", data_format="NHWC")
+		convolved = tf.reshape(convolved, [-1, self.FLAGS.time_length, self.FLAGS.num_features])
+		self.myLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
 		#self.myGRU = tf.contrib.rnn.GRUCell(self.num_hidden,input_size=(None,self.timelength,self.num_features))
-		outputs, _ = tf.nn.dynamic_rnn(self.myLSTM, self.X, initial_state = self.myLSTM.zero_state(batch_size,tf.float32), scope='step1/rnn1')
-		self.secondLSTM = MultiplicativeLSTMCell(self.num_features)
+		outputs, _ = tf.nn.dynamic_rnn(self.myLSTM, convolved, initial_state = self.myLSTM.zero_state(batch_size,tf.float32), scope='step1/rnn1')
+		self.secondLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_features)
 		print self.myLSTM.state_size
 		print self.secondLSTM.state_size
 		#self.secondGRU = tf.contrib.rnn.GRUCell(self.num_features,input_size=(None,self.timelength,self.num_hidden))
@@ -51,5 +53,4 @@ class multiplicative_LSTM_rnn_inherited(baseClassifier):
 		step2Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step2")
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
-
 

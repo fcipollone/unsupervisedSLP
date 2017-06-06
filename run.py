@@ -1,5 +1,7 @@
 import argparse
 from rnn_inherited import rnn_inherited
+from convolutional_inherited import convolutional_inherited
+from multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
 import datetime
 
 parser = argparse.ArgumentParser(description="Run commands")
@@ -20,6 +22,7 @@ if __name__ == '__main__':
 	FLAGS.model_save_dir = None    #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
 	FLAGS.load_dir = None 		   #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/rnn_inherited/autoencoder_and_classifier/2017-06-03 21:59:30.890055,0,rnn_inherited'
 	FLAGS.indices = [0]
+	FLAGS.num_features = len(FLAGS.indices)
 
 	# feature-numbers, day, 
 	model_name = FLAGS.model_name
@@ -30,6 +33,8 @@ if __name__ == '__main__':
 		model = rnn_inherited(FLAGS)
 	elif model_name == "multiplicative_rnn":
 		model = multiplicative_LSTM_rnn_inherited(FLAGS)
+	elif model_name == 'convolutional_inherited':
+		model = convolutional_inherited(FLAGS)
 
 	model.createModel()
 	model.train()

@@ -114,7 +114,8 @@ class baseClassifier:
 						batch_x, batch_y = self.data.getBatchValid(self.batch_size, self.timelength, self.batchType)
 						loss = session.run([self.loss], feed_dict=self.createFeedDict(batch_x, batch_y))
 						print ("Loss = ", loss[0])
-				self.saveModel(session, 'autoencoder/')
+				if self.FLAGS.model_save_dir != None:
+					self.saveModel(session, 'autoencoder/')
 
 			if self.train_classifier:
 				for i in range(self.iterations_classification):
@@ -129,7 +130,8 @@ class baseClassifier:
 						summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
 						print ("Loss = ", loss)
 						print ("Accuracy = ", accuracy)
-				self.saveModel(session, 'autoencoder_and_classifier/')
+				if self.FLAGS.model_save_dir != None:
+					self.saveModel(session, 'autoencoder_and_classifier/')
 
 
 
