@@ -1,8 +1,5 @@
 import argparse
-from models.rnn_inherited import rnn_inherited
-from models.rnn_bigger_inherited import rnn_bigger_inherited
-from models.convolutional_inherited import convolutional_inherited
-from models.multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
+from models.rnn_inherited import *
 import datetime
 from time import gmtime, strftime
 
@@ -39,12 +36,26 @@ if __name__ == '__main__':
 	model = None
 	if model_name == "rnn_inherited":
 		model = rnn_inherited(FLAGS)
-	elif model_name == "multiplicative_rnn":
-		model = multiplicative_LSTM_rnn_inherited(FLAGS)
-	elif model_name == 'convolutional_inherited':
-		model = convolutional_inherited(FLAGS)
 	elif model_name == 'rnn_bigger_inherited':
 		model = rnn_bigger_inherited(FLAGS)
+	elif model_name == 'rnn_autoencoder_inherited':
+		model = rnn_autoencoder_inherited(FLAGS)
+	elif model_name == "multiplicative_LSTM_rnn_inherited":
+		model = multiplicative_LSTM_rnn_inherited(FLAGS)
+	elif model_name == "multiplicative_LSTM_rnn_bigger_inherited":
+		model = multiplicative_LSTM_rnn_bigger_inherited(FLAGS)
+	elif model_name == "multiplicative_LSTM_rnn_autoencoder_inherited":
+		model = multiplicative_LSTM_rnn_autoencoder_inherited(FLAGS)
+	elif model_name == "multiplicative_LSTM_rnn_state_classifier_inherited":
+		model = multiplicative_LSTM_rnn_state_classifier_inherited(FLAGS)
+	elif model_name == 'convolutional_inherited':
+		model = convolutional_inherited(FLAGS)
+	elif model_name == 'convolutional_multiplicative_inherited':
+		model = convolutional_multiplicative_inherited(FLAGS)
+	elif model_name == 'convolutional_multiplicative_bigger_inherited':
+		model = convolutional_multiplicative_bigger_inherited(FLAGS)
+	elif model_name == 'convolutional_multiplicative_autoencoder_inherited':
+		model = convolutional_multiplicative_autoencoder_inherited(FLAGS)
 
 	model.createModel()
 	model.train()

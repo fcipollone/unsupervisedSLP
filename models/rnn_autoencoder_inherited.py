@@ -2,18 +2,17 @@ from base import baseClassifier
 import tensorflow as tf
 from tensorflow.contrib import layers
 from tensorflow.contrib import losses
-from MultiplicativeLSTMCell import MultiplicativeLSTMCell
 
-class convolutional_multiplicative_inherited(baseClassifier):
+class rnn_autoencoder_inherited(baseClassifier):
+	def setBatchType(self):
+		self.batchType = "vanilla autoencoder"
+
 	def buildModel(self):
 		batch_size = tf.shape(self.X)[0]
-		reshaped = tf.reshape(self.X, [-1, self.FLAGS.time_length, self.FLAGS.num_features, 1])
-		convolved = tf.contrib.layers.conv2d(reshaped, num_outputs=1, kernel_size=[4,1], stride=[1,1], padding="SAME", data_format="NHWC", scope='step1/conv')
-		convolved = tf.reshape(convolved, [-1, self.FLAGS.time_length, self.FLAGS.num_features])
-		self.myLSTM = MultiplicativeLSTMCell(self.num_hidden)
+		self.myLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
 		#self.myGRU = tf.contrib.rnn.GRUCell(self.num_hidden,input_size=(None,self.timelength,self.num_features))
 		outputs, _ = tf.nn.dynamic_rnn(self.myLSTM, self.X, initial_state = self.myLSTM.zero_state(batch_size,tf.float32), scope='step1/rnn1')
-		self.secondLSTM = MultiplicativeLSTMCell(self.num_features)
+		self.secondLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_features)
 		print self.myLSTM.state_size
 		print self.secondLSTM.state_size
 		#self.secondGRU = tf.contrib.rnn.GRUCell(self.num_features,input_size=(None,self.timelength,self.num_hidden))
@@ -24,9 +23,9 @@ class convolutional_multiplicative_inherited(baseClassifier):
 		#Self.state is my prediction for the next step, this next part is a fully connected layer from all hidden states
 		#To the classification for part two.
 		packedOutputs = tf.stack(outputs)
-		outputs = tf.reshape(packedOutputs, [-1, self.timelength*self.num_features])
-		self.classification = tf.contrib.layers.fully_connected(outputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
-		return self.state
+		reshapedOutputs = tf.reshape(packedOutputs, [-1, self.timelength*self.num_features])
+		self.classification = tf.contrib.layers.fully_connected(reshapedOutputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
+		return outputs
 
 	def addLoss(self, y_out):
 		l2_cost = 0
@@ -54,5 +53,4 @@ class convolutional_multiplicative_inherited(baseClassifier):
 		step2Train = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"step2")
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
-
 

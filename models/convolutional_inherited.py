@@ -7,7 +7,7 @@ class convolutional_inherited(baseClassifier):
 	def buildModel(self):
 		batch_size = tf.shape(self.X)[0]
 		reshaped = tf.reshape(self.X, [-1, self.FLAGS.time_length, self.FLAGS.num_features, 1])
-		convolved = tf.contrib.layers.conv2d(reshaped, num_outputs=1, kernel_size=[4,1], stride=[1,1], padding="SAME", data_format="NHWC")
+		convolved = tf.contrib.layers.conv2d(reshaped, num_outputs=1, kernel_size=[4,1], stride=[1,1], padding="SAME", data_format="NHWC", scope='step1/conv')
 		convolved = tf.reshape(convolved, [-1, self.FLAGS.time_length, self.FLAGS.num_features])
 		self.myLSTM = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
 		#self.myGRU = tf.contrib.rnn.GRUCell(self.num_hidden,input_size=(None,self.timelength,self.num_features))

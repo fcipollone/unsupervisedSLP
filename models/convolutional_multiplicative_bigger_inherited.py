@@ -4,7 +4,10 @@ from tensorflow.contrib import layers
 from tensorflow.contrib import losses
 from MultiplicativeLSTMCell import MultiplicativeLSTMCell
 
-class convolutional_multiplicative_inherited(baseClassifier):
+class convolutional_multiplicative_bigger_inherited(baseClassifier):
+	def setBatchType(self):
+		self.batchType = "Predict <timestep> next"
+
 	def buildModel(self):
 		batch_size = tf.shape(self.X)[0]
 		reshaped = tf.reshape(self.X, [-1, self.FLAGS.time_length, self.FLAGS.num_features, 1])
@@ -24,9 +27,9 @@ class convolutional_multiplicative_inherited(baseClassifier):
 		#Self.state is my prediction for the next step, this next part is a fully connected layer from all hidden states
 		#To the classification for part two.
 		packedOutputs = tf.stack(outputs)
-		outputs = tf.reshape(packedOutputs, [-1, self.timelength*self.num_features])
-		self.classification = tf.contrib.layers.fully_connected(outputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
-		return self.state
+		reshapedOutputs = tf.reshape(packedOutputs, [-1, self.timelength*self.num_features])
+		self.classification = tf.contrib.layers.fully_connected(reshapedOutputs, num_outputs=self.num_classes, weights_initializer = tf.contrib.layers.xavier_initializer(), scope='step2')
+		return outputs
 
 	def addLoss(self, y_out):
 		l2_cost = 0
