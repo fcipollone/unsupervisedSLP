@@ -1,5 +1,6 @@
 import argparse
 from rnn_inherited import rnn_inherited
+from multiplicativeLSTM_rnn_inherited import multiplicative_LSTM_rnn_inherited
 import datetime
 
 parser = argparse.ArgumentParser(description="Run commands")
@@ -14,11 +15,14 @@ parser.add_argument('-clss', '--num_classes',               type=int,   default=
 parser.add_argument('-atr', '--train_autoencoder',          type=bool,  default=True,             help='Whether to train the autoencoder or not')
 parser.add_argument('-ctr', '--train_classifier',           type=bool,  default=True,             help='Whether to train the classifier or not')
 parser.add_argument('-mdl', '--model_name',                 type=str,   default="rnn_inherited",  help='Whether to train the classifier or not')
+parser.add_argument('-vacc', '--validation_accuracy', 		type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire validation set')
+parser.add_argument('-tacc', '--test_accuracy', 			type=bool, 	default=False,				help='Whether to evaluate the accuracy of entire test set')
+
 
 if __name__ == '__main__':
 	FLAGS = parser.parse_args()
-	FLAGS.model_save_dir = None    #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
-	FLAGS.load_dir = None 		   #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/rnn_inherited/autoencoder_and_classifier/2017-06-03 21:59:30.890055,0,rnn_inherited'
+	FLAGS.model_save_dir = '/Users/mila/Documents/Spring2017/CS224s/unsupervisedSLP/saved_models/'    #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
+	FLAGS.load_dir = None #'/Users/mila/Documents/Spring2017/CS224s/unsupervisedSLP/saved_models/2017-06-05 16/52/37.780809-0-multiplicative_rnn' #None 		   #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/rnn_inherited/autoencoder_and_classifier/2017-06-03 21:59:30.890055,0,rnn_inherited'
 	FLAGS.indices = [0]
 
 	# feature-numbers, day, 
@@ -33,4 +37,5 @@ if __name__ == '__main__':
 
 	model.createModel()
 	model.train()
+
 

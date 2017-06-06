@@ -52,8 +52,3 @@ class multiplicative_LSTM_rnn_inherited(baseClassifier):
 		classificationOptimizer = optimizer2.minimize(self.classificationLoss, var_list=step2Train)
 		return optimizer, classificationOptimizer
 
-p = multiplicative_LSTM_rnn_inherited()
-p.createModel()
-#p.train("/tmp/model.ckpt")
-p.train()
-
