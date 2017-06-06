@@ -3,6 +3,7 @@ from featureExtract import dataHolder
 from tensorflow.contrib import layers
 from tensorflow.contrib import losses
 from time import gmtime, strftime
+import numpy as np
 import os
 
 class baseClassifier:
@@ -20,6 +21,9 @@ class baseClassifier:
 		self.num_classes = FLAGS.num_classes
 		self.train_autoencoder = FLAGS.train_autoencoder
 		self.train_classifier = FLAGS.train_classifier
+		self.compute_validation_accuracy = FLAGS.validation_accuracy
+		self.compute_test_accuracy = FLAGS.test_accuracy
+
 		#Batch type is a feature because I want to allow for multiple ways to input data
 		#	1) Currently "Predict single next" is the only one -- you get 'timelength' previous steps
 		#	and need to predict the next step's features.
@@ -131,7 +135,32 @@ class baseClassifier:
 						print ("Accuracy = ", accuracy)
 				self.saveModel(session, 'autoencoder_and_classifier/')
 
+			if self.compute_validation_accuracy:
+				validationBatches = self.data.getAllValidationBatches(self.batch_size, self.timelength)
+				# validationBatches = self.data.getAllValidationBatchesFromMiddle(self.batch_size, self.timelength)
+				print ("Validation set number of batches =", len(validationBatches))
+				accuracies = []
+				for i, (batch_x, batch_y) in enumerate(validationBatches):
+					print ("Validation iteration:", i)
+					summary, loss, accuracy = session.run([self.classificationMerged, self.classificationLoss, self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					print ("Accuracy =", accuracy)
+					accuracies.append(accuracy)
+				accuracy = np.mean(accuracies)
+				print accuracy 
+				print ("Average accuracy on validation set =", accuracy) 
 
+			if self.compute_test_accuracy:
+				testBatches = self.data.getAllValidationBatches(self.batch_size, self.timelength)
+				print ("Test set number of batches =", len(testBatches))
+				accuracies = []
+				for i, (batch_x, batch_y) in enumerate(testBatches):
+					print ("Test iteration:", i)
+					accuracy = session.run([self.classificationAccuracy], feed_dict=self.createFeedDict2(batch_x, batch_y))
+					print ("Accuracy =", accuracy)
+					accuracies.append(accuracy)
+				accuracy = np.mean(accuracies)
+				print accuracy 
+				print ("Average accuracy on test set =", accuracy) 
 
 	def saveModel(self, session, direc):
 		model_save_path = self.FLAGS.model_save_dir
