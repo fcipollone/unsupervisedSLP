@@ -10,6 +10,7 @@ from models.rnn_inherited import rnn_inherited
 from models.rnn_bigger_inherited import rnn_bigger_inherited
 import datetime
 from time import gmtime, strftime
+import sys
 
 
 parser = argparse.ArgumentParser(description="Run commands")
@@ -25,16 +26,19 @@ parser.add_argument('-atr', '--train_autoencoder',          type=bool,  default=
 parser.add_argument('-ctr', '--train_classifier',           type=bool,  default=True,             help='Whether to train the classifier or not')
 parser.add_argument('-mdl', '--model_name',                 type=str,   default="rnn_inherited",  help='Whether to train the classifier or not')
 parser.add_argument('-vacc', '--validation_accuracy', 		type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire validation set')
-parser.add_argument('-tacc', '--test_accuracy', 			type=bool, 	default=False,				help='Whether to evaluate the accuracy of entire test set')
-
+parser.add_argument('-tacc', '--test_accuracy', 			type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire test set')
+parser.add_argument('-idx', '--indices_list', 					type=str, 	default="1,2", 				help='String list of indices separated by commas')
 
 if __name__ == '__main__':
+	# sys.stdout = open('runs.txt', 'a+')
+	print "whatever"
+
 	FLAGS = parser.parse_args()
 
-	FLAGS.model_save_dir = '/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
+	FLAGS.model_save_dir = '/Users/mila/Documents/Spring2017/CS224s/unsupervisedSLP/saved_models/' #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/'
 	FLAGS.load_dir = None #'/Users/frank/stanford/spring2017/slp/project/code/saved_models/convolutional_inherited/autoencoder_and_classifier/convolutional_inherited0_2017_06_06_01_15_20'
 
-	FLAGS.indices = [0]
+	FLAGS.indices = [int(x) for x in FLAGS.indices_list.split(",")]
 	FLAGS.num_features = len(FLAGS.indices)
 
 	# feature-numbers, day, 
@@ -62,7 +66,7 @@ if __name__ == '__main__':
 		model = convolutional_multiplicative_bigger_inherited(FLAGS)
 	elif model_name == 'autoencoder':
 		model = autoencoder(FLAGS)
+
 	model.createModel()
 	model.train()
-
 

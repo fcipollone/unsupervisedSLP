@@ -156,6 +156,8 @@ class baseClassifier:
 				accuracy = np.mean(accuracies)
 				print accuracy 
 				print ("Average accuracy on validation set =", accuracy) 
+				with open("validation_runs.txt", 'a+') as file:
+					print >> file, "Average accuracy on validation set =", accuracy, "Features = ", self.data.indices, "Flags =", self.FLAGS 
 
 			if self.compute_test_accuracy:
 				testBatches = self.data.getAllValidationBatches(self.batch_size, self.timelength)
@@ -169,6 +171,9 @@ class baseClassifier:
 				accuracy = np.mean(accuracies)
 				print accuracy 
 				print ("Average accuracy on test set =", accuracy) 
+				with open("test_runs.txt", 'a+') as file:
+					print >> file, "Average accuracy on test set =", accuracy, "Features = ", self.data.indices, "Flags =", self.FLAGS 
+
 
 	def saveModel(self, session, direc):
 		model_save_path = self.FLAGS.model_save_dir
