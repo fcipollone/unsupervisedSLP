@@ -92,19 +92,19 @@ class dataHolder:
 			startind = endind-length
 			returnBatch.append(item[startind:endind])
 			returnLabels.append(labelsTaken[index])
-		print np.shape(np.array(returnBatch)), np.shape(np.array(returnLabels))
+		# print np.shape(np.array(returnBatch)), np.shape(np.array(returnLabels))
 		return np.array(returnBatch), np.array(returnLabels)
 
 	def getAllValidationBatchesRandom(self, size, length):
-		print "get all validation batches random"
+		# print "get all validation batches random"
 		batches = []
 		#random.seed(48392)
 		batch_index = 0
-		print "len(self.valid)", len(self.valid)
-		print "size", size
-		print "length", length
+		# print "len(self.valid)", len(self.valid)
+		# print "size", size
+		# print "length", length
 		while batch_index <= len(self.valid) - size:
-			print batch_index
+			# print batch_index
 			batch = []
 			labels = []
 			for i in range(size):
@@ -122,12 +122,12 @@ class dataHolder:
 		return batches
 
 	def getAllValidationBatches(self, size, length):
-		print "get all validation batches"
+		# print "get all validation batches"
 		batches = []
 		batch_index = 0
-		print "len(self.valid)", len(self.valid)
-		print "size", size
-		print "length", length
+		# print "len(self.valid)", len(self.valid)
+		# print "size", size
+		# print "length", length
 
 		# we want some number of batches
 		# each batch is of length size 
@@ -150,13 +150,13 @@ class dataHolder:
 		return batches
 
 	def getAllValidationBatchesFromMiddle(self, size, length):
-		print "get all validation batches"
+		# print "get all validation batches"
 		batches = []
 		#random.seed(48392)
 		batch_index = 0
-		print "len(self.valid)", len(self.valid)
-		print "size", size
-		print "length", length
+		# print "len(self.valid)", len(self.valid)
+		# print "size", size
+		# print "length", length
 
 		# we want some number of batches
 		# each batch is of length size 
@@ -183,12 +183,12 @@ class dataHolder:
 		return batches
 
 	def getAllTestBatches(self, size, length):
-		print "get all validation batches"
+		# print "get all validation batches"
 		batches = []
 		batch_index = 0
-		print "len(self.valid)", len(self.test)
-		print "size", size
-		print "length", length
+		# print "len(self.valid)", len(self.test)
+		# print "size", size
+		# print "length", length
 
 		# we want some number of batches
 		# each batch is of length size 
@@ -220,7 +220,7 @@ class dataHolder:
    			return sliced_features, labels
 
 		except IOError:
-			print "Generating features"
+			# print "Generating features"
 			features, labels = self.parseAllFeatures(allIndices, filenames)
 
 			np.save(self.featuresFileName, features)
@@ -237,7 +237,7 @@ class dataHolder:
 		num = 0
 		for el in filenames:
 			classname = el.split('/')[-1].strip()
-			print (el, classname)
+			# print (el, classname)
 			try:
 				[Fs, x] = audioBasicIO.readAudioFile(el);
 			except ValueError:

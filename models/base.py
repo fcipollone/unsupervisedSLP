@@ -23,6 +23,7 @@ class baseClassifier:
 		self.train_classifier = FLAGS.train_classifier
 		self.compute_validation_accuracy = FLAGS.validation_accuracy
 		self.compute_test_accuracy = FLAGS.test_accuracy
+		self.train_classifier_small = FLAGS.train_classifier_small
 
 		#Batch type is a feature because I want to allow for multiple ways to input data
 		#	1) Currently "Predict single next" is the only one -- you get 'timelength' previous steps
@@ -130,7 +131,12 @@ class baseClassifier:
 			if self.train_classifier:
 				for i in range(self.iterations_classification):
 					#This is the part that trains the classifier
-					batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
+					if self.train_classifier_small:
+						batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
+					else:
+						# this is if we train the classifier with all of the data
+						batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)
+
 					session.run([self.classificationOptimizer], feed_dict=self.createFeedDict2(batch_x, batch_y))
 					#train_writer.add_summary(summary, i)
 					if i % 100 == 0:
@@ -160,7 +166,7 @@ class baseClassifier:
 					print >> file, "Average accuracy on validation set =", accuracy, "Features = ", self.data.indices, "Flags =", self.FLAGS 
 
 			if self.compute_test_accuracy:
-				testBatches = self.data.getAllValidationBatches(self.batch_size, self.timelength)
+				testBatches = self.data.getAllTestBatches(self.batch_size, self.timelength)
 				print ("Test set number of batches =", len(testBatches))
 				accuracies = []
 				for i, (batch_x, batch_y) in enumerate(testBatches):

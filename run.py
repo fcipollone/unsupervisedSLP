@@ -28,6 +28,7 @@ parser.add_argument('-mdl', '--model_name',                 type=str,   default=
 parser.add_argument('-vacc', '--validation_accuracy', 		type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire validation set')
 parser.add_argument('-tacc', '--test_accuracy', 			type=bool, 	default=True,				help='Whether to evaluate the accuracy of entire test set')
 parser.add_argument('-idx', '--indices_list', 					type=str, 	default="1,2", 				help='String list of indices separated by commas')
+parser.add_argument('-ctrs', '--train_classifier_small', 	type=bool, 	default=False, 			help='Whether to train the classifier on only a small portion of labeled data')
 
 if __name__ == '__main__':
 	# sys.stdout = open('runs.txt', 'a+')
