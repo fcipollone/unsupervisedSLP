@@ -132,7 +132,8 @@ class baseClassifier:
 				for i in range(self.iterations_classification):
 					#This is the part that trains the classifier
 					if self.train_classifier_small:
-						batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
+						batch_x, batch_y = self.data.getBatchClassifierTrainWithLabels(self.batch_size, self.timelength)
+						# batch_x, batch_y = self.data.getBatchWithLabelsValid(self.batch_size, self.timelength)
 					else:
 						# this is if we train the classifier with all of the data
 						batch_x, batch_y = self.data.getBatchWithLabels(self.batch_size, self.timelength)

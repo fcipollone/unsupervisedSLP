@@ -21,12 +21,13 @@ class dataHolder:
 		filenames = self.getAllFilenames()
 		# self.testFileReading()
 		self.data, self.labels = self.getAllFeatures(filenames)
-		self.train, self.valid, self.test, self.train_labels, self.valid_labels, self.test_labels = self.splitData(self.data, self.labels)
+		self.train, self.valid, self.test, self.classifier_train, self.train_labels, self.valid_labels, self.test_labels, self.classifier_train_labels = self.splitData(self.data, self.labels)
 
 	def splitData(self, data, dataLabels):
+		classifier_train = int(.1*float(len(data)))
 		valid = int(.8*float(len(data)))
 		test = int(.9*float(len(data)))
-		return data[0:valid], data[valid:test], data[test:], dataLabels[0:valid], dataLabels[valid:test], dataLabels[test:]
+		return data[0:valid], data[valid:test], data[test:], data[0:classifier_train], dataLabels[0:valid], dataLabels[valid:test], dataLabels[test:], dataLabels[0:classifier_train]
 
 	def getBatchOf(self, size, length, out_type):
 		returnBatch = []
@@ -64,6 +65,21 @@ class dataHolder:
 				returnLabels.append(item[startind+1:endind+1])
 			else:
 				raise NotImplementedError
+		return np.array(returnBatch), np.array(returnLabels)
+
+	def getBatchClassifierTrainWithLabels(self, size, length):
+		returnBatch = []
+		returnLabels = []
+		takenFrom = self.classifier_train
+		labelsTaken = self.classifier_train_labels
+		for i in range(size):
+			index = random.randint(0,len(takenFrom)-1)
+			item = takenFrom[index]
+			endind = random.randint(length, len(item)-1)
+			startind = endind-length
+			returnBatch.append(item[startind:endind])
+			returnLabels.append(labelsTaken[index])
+		# print np.shape(np.array(returnBatch)), np.shape(np.array(returnLabels))
 		return np.array(returnBatch), np.array(returnLabels)
 
 	def getBatchWithLabels(self, size, length):
